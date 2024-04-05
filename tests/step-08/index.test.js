@@ -142,9 +142,10 @@ test('Execute SQL Query with INNER JOIN', async () => {
 });
 
 test('Execute SQL Query with INNER JOIN and a WHERE Clause', async () => {
+    const query = 'SELECT student.name, enrollment.course, student.age FROM student INNER JOIN enrollment ON student.id = enrollment.student_id WHERE student.age > 25';
+    const result = await executeSELECTQuery(query);
     
-    
-    result =  [
+   /* result =  [
       {
         'student.name': 'John',
         'enrollment.course': 'Mathematics',
@@ -156,7 +157,7 @@ test('Execute SQL Query with INNER JOIN and a WHERE Clause', async () => {
         'student.age': '30'
       }
     ]
-    
+    */
     
     expect(result.length).toEqual(2);
     // toHaveProperty is not working here due to dot in the property name
