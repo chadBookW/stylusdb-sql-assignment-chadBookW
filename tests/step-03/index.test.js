@@ -1,5 +1,6 @@
 const readCSV = require('../../src/csvReader');
 const parseQuery = require('../../src/queryParser');
+const executeSELECTQuery = require('../../src/index');
 
 test('Read CSV File', async () => {
     const data = await readCSV('./sample.csv');
@@ -15,6 +16,31 @@ test('Parse SQL Query', () => {
     expect(parsed).toEqual({
         fields: ['id', 'name'],
         table: 'sample',
-        whereClause: null  // Adding the expectation for whereClause
+        whereClauses: [] // Update expectation to match the actual output
     });
+});
+
+test('Parse SQL Query with Multiple WHERE Clauses', () => {
+    const query = 'SELECT id, name FROM sample WHERE age = 30 AND name = John';
+    const parsed = parseQuery(query);
+    expect(parsed).toEqual({
+        fields: ['id', 'name'],
+        table: 'sample',
+        whereClauses: [{
+            "field": "age",
+            "operator": "=",
+            "value": "30",
+        }, {
+            "field": "name",
+            "operator": "=",
+            "value": "John",
+        }]
+    });
+});
+
+test('Execute SQL Query with Multiple WHERE Clause', async () => {
+    const query = 'SELECT id, name FROM sample WHERE age = 30 AND name = John';
+    const result = await executeSELECTQuery(query);
+    expect(result.length).toBe(1);
+    expect(result[0]).toEqual({ id: '1', name: 'John' });
 });

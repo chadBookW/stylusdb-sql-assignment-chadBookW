@@ -16,7 +16,7 @@ test('Parse SQL Query', () => {
     expect(parsed).toEqual({
         fields: ['id', 'name'],
         table: 'sample',
-        whereClause: null
+        whereClauses: [] // Adjusted property name and value
     });
 });
 
@@ -30,23 +30,27 @@ test('Execute SQL Query', async () => {
     expect(result[0]).toEqual({ id: '1', name: 'John' });
 });
 
-test('Parse SQL Query with WHERE Clause', () => {
-    const query = 'SELECT id, name FROM sample WHERE age = 25';
+test('Parse SQL Query with Multiple WHERE Clauses', () => {
+    const query = 'SELECT id, name FROM sample WHERE age = 30 AND name = John';
     const parsed = parseQuery(query);
     expect(parsed).toEqual({
         fields: ['id', 'name'],
         table: 'sample',
-        whereClause: 'age = 25'
+        whereClauses: [{
+            "field": "age",
+            "operator": "=",
+            "value": "30",
+        }, {
+            "field": "name",
+            "operator": "=",
+            "value": "John",
+        }]
     });
 });
 
-// tests/index.test.js
-
-test('Execute SQL Query with WHERE Clause', async () => {
-    const query = 'SELECT id, name FROM sample WHERE age = 25';
+test('Execute SQL Query with Multiple WHERE Clause', async () => {
+    const query = 'SELECT id, name FROM sample WHERE age = 30 AND name = John';
     const result = await executeSELECTQuery(query);
     expect(result.length).toBe(1);
-    expect(result[0]).toHaveProperty('id');
-    expect(result[0]).toHaveProperty('name');
-    expect(result[0].id).toBe('2');
+    expect(result[0]).toEqual({ id: '1', name: 'John' });
 });
